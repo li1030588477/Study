@@ -208,3 +208,43 @@ function addEvent(elem, type, handle){
 		elem['on' + type] = handle;
 	}
 }
+
+// 取消冒泡
+/*
+	@parm: event 事件对象
+*/
+function stopBubble(event){
+	if (event.stopPropagation){
+		// w3school 推荐的方法,ie8包括ie8不兼容
+		event.stopPropagation();
+	}else {
+		// ie独有的方法（存在争议）
+		event.cancelBubble = true;
+	}
+}
+
+
+//	取消元素的默认事件（取消默认事件的方法很多，这里只封装两种）
+/*
+	@parm: event 事件对象
+*/
+function cancelHandler(event){
+	if (event.preventDefault){
+		// w3 推荐，ie8包括ie8不兼容
+		event.preventDefault();
+	}else {
+		// 兼容IE
+		event.returnValue = false;
+	}
+}
+
+// 获得事件源对象
+/*
+	这里推荐编写以下代码
+	xx.onclick = function(e){
+		var event = e || window.event; // 后者兼容ie
+		var target = event.target || event.srcElement; //前者只有火狐有，后者只有ie有，两者谷歌都有
+		......
+
+	}
+*/
