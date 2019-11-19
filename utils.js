@@ -209,6 +209,27 @@ function addEvent(elem, type, handle){
 	}
 }
 
+// 事件绑定取消函数
+/*
+	@parm: elem:  要取消绑定的元素
+			type: 取消绑定的事件类型
+			handle: 取消绑定的处理函数(必须与绑定的函数相同)
+*/
+function removeEvent(elem, type, handle){
+	if (elem.removeEventListener){
+		elem.removeEventListener(type,handle,false);
+	}else if (elem.detachEvent){
+		// ie 浏览器
+		elem.detachEvent('on'+type, function(){
+			handle.call(elem);
+		})
+	}else {
+		elem['on' + type] = null;
+	}
+}
+
+
+
 // 取消冒泡
 /*
 	@parm: event 事件对象
@@ -248,3 +269,39 @@ function cancelHandler(event){
 
 	}
 */
+
+// 元素拖拽功能(要求元素的left，top属性要生效，才可用)
+/*
+	@parm: elem:  要设置拖拽功能的元素
+*/
+function drag(elem){
+	var disX,
+		disY;
+	addEvent(elem, "mousedown", function(e){
+		var event = e || window.event;
+		/*if(isNaN(parseInt(getStyle(elem,'left')))||isNaN(parseInt(getStyle(elem,'top')))){
+			// 如果这个left，top属性生效，则不需要这个if语句，并且这个if语句只是为了不报错。
+			// 如果left，top属性生效，则元素无法移动
+			disX = event.clientX;
+			disY = event.clientY;
+		}else{*/
+			disX = event.clientX - parseInt(getStyle(elem,'left'));
+			disY = event.clientY - parseInt(getStyle(elem,'top'));			
+		//}
+		addEvent(document,'mousemove',mouseMove);
+		addEvent(document,"mouseup",mouseUp);
+		stopBubble(event); // 取消冒泡
+		cancelHandler(event); // 取消元素默认事件
+	});
+	function mouseMove(e){
+		// 拖拽功能
+		var event = e || window.event;
+		elem.style.left = event.clientX - disX + "px";
+		elem.style.top = event.clientY - disY + "px";
+	}
+	function mouseUp(e){
+		var event = e || window.event;
+		removeEvent(document,"mousemove",mouseMove);
+		removeEvent(document,"mouseup",mouseUp);	
+	}
+}
