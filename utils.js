@@ -305,3 +305,30 @@ function drag(elem){
 		removeEvent(document,"mouseup",mouseUp);	
 	}
 }
+
+
+//	异步处理函数
+/*
+	@parm: url： 要引入的js代码
+		   callback: 要执行的方法（传入的是方法的字符串，如 "test()"）
+*/
+
+function loadScript(url,callback){
+	var script = document.createElement('script');
+	script.type = "text/javascript";
+	
+	if (script.readyState){
+		script.onreadyStataechange = function(){
+			// IE
+			if (script,readyState == "complete" || script.readyState == "load"){
+				eval(callback);
+			}
+		}
+	}else {
+		script.onload = function(){
+			eval(callback);
+		}
+	}
+	script.url = url;
+	document.head.appendChild(script);
+}
